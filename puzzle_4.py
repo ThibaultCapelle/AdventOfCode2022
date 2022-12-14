@@ -16,9 +16,11 @@ for line in lines:
     rng1, rng2=line.rstrip('\n').split(',')
     l1,l2=rng1.split('-')
     l3,l4=rng2.split('-')
-    if int(l1)<=int(l3) and int(l2)>=int(l4):
+    if int(l1)<=int(l3) and int(l3)<=int(l2):
         current_sum+=1
-    elif int(l1)>=int(l3) and int(l2)<=int(l4):
+        print([rng1, rng2])
+    elif int(l1)>=int(l3) and int(l4)>=int(l1):
         current_sum+=1
+        print([rng1, rng2])
 print(current_sum)
         
