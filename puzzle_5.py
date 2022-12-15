@@ -5,7 +5,7 @@ Created on Tue Dec 13 23:16:10 2022
 
 @author: usera
 """
-
+#wrong=RDRQHLNHS
 import numpy as np
 filename='input_5'
 
@@ -22,8 +22,6 @@ for k in keys:
     stacks[k[1]]=[]
 j=N-1
 while(j>=0):
-    print(stacks)
-    print(lines[j])
     for k in range(M):
         if lines[j][4*k+1]!=' ':
             stacks[str(k+1)].append(lines[j][4*k+1])
@@ -37,10 +35,12 @@ for line in lines[N+2:]:
     print([quantity, src, dst])
     for i in range(int(quantity)):
         if len(stacks[src])>0:
-            stacks[dst].append(stacks[src].pop())
+            stacks[dst].append(stacks[src][-int(quantity)+i])
         else:
             print('problem')
             1/0
+    stacks[src]=stacks[src][:-int(quantity)]
+    print(stacks)
 
 for val in stacks.values():
     if len(val)>0:
