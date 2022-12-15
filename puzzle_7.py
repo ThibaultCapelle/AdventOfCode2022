@@ -69,9 +69,18 @@ for line in lines:
 
 current_sum=0
 dirs=father.get_tree()
-
+sizes=dict()
 for directory in dirs:
-    size=directory.get_size()
-    if size<=100000:
-        current_sum+=size
-print(current_sum)
+    sizes[directory]=directory.get_size()
+total_size=father.get_size()
+limit=70000000
+free_space=limit-total_size
+space_to_free = 30000000-free_space
+minimum=np.inf
+dir_min=None
+for directory in dirs:
+    if sizes[directory]>space_to_free and sizes[directory]<minimum:
+        minimum=sizes[directory]
+        dir_min=directory
+
+print(dir_min.name)
