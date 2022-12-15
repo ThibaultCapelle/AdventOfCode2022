@@ -5,16 +5,20 @@ Created on Tue Dec 13 23:16:10 2022
 
 @author: usera
 """
-#wrong=RDRQHLNHS
 import numpy as np
 filename='input_6'
 
+def is_there_a_pair(line):
+    for i in range(len(line)):
+        for j in range(i+1, len(line)):
+            if line[i]==line[j]:
+                return True
+    return False
+
 with open(filename, 'r') as f:
     line=f.read()[:-1]
-for i in range(3, len(line)):
-    if line[i]!=line[i-1] and line[i]!=line[i-2] and line[i]!=line[i-3] and\
-        line[i-1]!=line[i-2] and line[i-1]!=line[i-3] and line[i-2]!=line[i-3]:
-            print(line[i-3:i+1])
-            print(i+1)
-            break
-
+for i in range(13, len(line)):
+    if not is_there_a_pair(line[i-13:i+1]):
+        print(line[i-13:i+1])
+        print(i)
+        break
