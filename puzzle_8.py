@@ -24,59 +24,67 @@ class Mat:
             for j, char in enumerate(line[:-1]):
                 self.mat[i,j]=int(char)
     
-    def count_visibles(self):
-        res=0
+    def find_max_visibility(self):
+        visibilities=np.empty((self.N, self.M))
         for i in range(self.N):
             for j in range(self.M):
-                if self.check_visibility(i, j):
-                    res+=1
-        return res
+                visibilities[i,j]=self.count_visibility(i, j)
+        return np.max(visibilities)
+
+    def count_visibility(self, i, j):
+        return self.count_visibilit_left(i, j)\
+            * self.count_visibilit_right(i, j)\
+                * self.count_visibilit_bottom(i, j)\
+                    * self.count_visibilit_top(i, j)
     
-    def check_visibility(self, i, j):
-        return self.check_visibilit_left(i, j)\
-            or self.check_visibilit_right(i, j)\
-                or self.check_visibilit_bottom(i, j)\
-                    or self.check_visibilit_top(i, j)
-    
-    def check_visibilit_left(self, i, j):
+    def count_visibilit_left(self, i, j):
         if j==0:
-            return True
+            return 0
         else:
             val=self.mat[i,j]
+            count=0
             for k in range(j):
-                if self.mat[i,k]>=val:
-                    return False
-            return True
+                count+=1
+                if self.mat[i,j-k-1]>=val:
+                    return count
+            return count
     
-    def check_visibilit_right(self, i, j):
+    def count_visibilit_right(self, i, j):
         if j==self.M-1:
-            return True
+            return 0
         else:
             val=self.mat[i,j]
+            count=0
             for k in range(j+1, self.M):
+                count+=1
                 if self.mat[i,k]>=val:
-                    return False
-            return True
+                    return count
+            return count
     
-    def check_visibilit_top(self, i, j):
+    def count_visibilit_top(self, i, j):
         if i==0:
-            return True
+            return 0
         else:
             val=self.mat[i,j]
+            count=0
             for k in range(i):
-                if self.mat[k,j]>=val:
-                    return False
-            return True
+                count+=1
+                if self.mat[i-k-1,j]>=val: 
+                    return count
+            return count
     
-    def check_visibilit_bottom(self, i, j):
+    def count_visibilit_bottom(self, i, j):
         if i==self.N-1:
-            return True
+            return 0
         else:
             val=self.mat[i,j]
+            count=0
             for k in range(i+1, self.N):
+                count+=1
                 if self.mat[k,j]>=val:
-                    return False
-            return True
+                    return count
+            return count
+        
 
 puzzle=Mat(lines)
-print(puzzle.count_visibles())
+print(puzzle.find_max_visibility())
