@@ -11,25 +11,52 @@ filename='input_10'
 
 with open(filename, 'r') as f:
     lines=f.readlines()
+    
+
 X=1
 current_cycle=0
-targets=[20, 60, 100, 140, 180, 220]
-X_vals=[]
+current_writing_pos=0
+LCD_lines=[]
+current_line=''
 for line in lines:
     if 'noop' in line:
         current_cycle+=1
-        if current_cycle in targets:
-            X_vals.append(X*current_cycle)
+        if np.abs(current_writing_pos-X)<=1:
+            current_line+='#'
+        else:
+            current_line+='.'
+        if len(current_line)==40:
+            current_writing_pos=0
+            LCD_lines.append(current_line)
+            current_line=''
+        else:
+            current_writing_pos+=1
     else:
         assert 'addx' in line
         value=int(line[:-1].split(' ')[1])
         current_cycle+=1
-        if current_cycle in targets:
-            X_vals.append(X*current_cycle)
+        if np.abs(current_writing_pos-X)<=1:
+            current_line+='#'
+        else:
+            current_line+='.'
+        if len(current_line)==40:
+            current_writing_pos=0
+            LCD_lines.append(current_line)
+            current_line=''
+        else:
+            current_writing_pos+=1
         current_cycle+=1
-        if current_cycle in targets:
-            X_vals.append(X*current_cycle)
+        if np.abs(current_writing_pos-X)<=1:
+            current_line+='#'
+        else:
+            current_line+='.'
+        if len(current_line)==40:
+            current_writing_pos=0
+            LCD_lines.append(current_line)
+            current_line=''
+        else:
+            current_writing_pos+=1
         X+=value
 
-print(np.sum(X_vals))
-# 18240 is too high
+for line in LCD_lines:
+    print(line)
