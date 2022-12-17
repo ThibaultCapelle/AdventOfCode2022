@@ -16,6 +16,7 @@ class Monkeys:
     
     def __init__(self):
         self.monkeys=dict()
+        self.modulo=None
         
     def add_monkey(self, number, items, operation, test, targets):
         self.monkeys[number]=Monkey(items, operation, test, targets, self)
@@ -42,10 +43,11 @@ class Monkey:
     def turn(self):
         ids_to_remove=[]
         
-        print('len items is {:}'.format(len(self.items)))
+        #print('len items is {:}'.format(len(self.items)))
+        print(self.items)
         for i, item in enumerate(self.items):
             self.object_inspected+=1
-            item=int(self.operation(item)/3)
+            item=self.operation(item)%self.parent.modulo
             if self.test(item):
                 self.send(item, self.targets[0])
             else:
@@ -67,29 +69,33 @@ monkeys=Monkeys()
 for line in lines:
     if line.startswith('Monkey'):
         number = int(line.split(' ')[1][:-2])
+        print('\n{:}'.format(number))
     elif line.startswith('  Starting items'):
         items = line[:-1].lstrip('Starting items: ').split(', ')
         items=[int(item) for item in items]
     elif line.startswith('  Operation:'):
         operation = line[:-1].lstrip('  Operation: ').split('=')[1]
-        #operation=lambda x:eval(text.replace('old', 'x'))
+        print(operation)
     elif line.startswith('  Test'):
         divider=int(line.lstrip('  Test: divisible by ')[:-1])
-        #test=lambda x:(x%divider==0)
+        print('divider: {:}'.format(divider))
     elif line.startswith('    If true'):
         target_true=int(line.lstrip('    If true: throw to monkey ')[:-1])
     elif line.startswith('    If false'):
         target_false=int(line.lstrip('    If false: throw to monkey ')[:-1])
+        print('targets: {:}'.format([target_true, target_false]))
         monkeys.add_monkey(number, items, operation, divider,
                                [target_true, target_false])
 
-
-N_round=20
+modulo=np.prod([monkey.test_val for monkey in monkeys.monkeys.values()])
+monkeys.modulo=modulo
+N_round=10000
 for i in range(N_round):
+    print(i)
     for k, monkey in monkeys.monkeys.items():
-        print('turn number {:} monkey number {:}'.format(i, k))
+        '''print('turn number {:} monkey number {:}'.format(i, k))
         monkey.print_all()
-        print([monkey.object_inspected for monkey in monkeys.monkeys.values()])
+        print([monkey.object_inspected for monkey in monkeys.monkeys.values()])'''
         monkey.turn()
 
 
