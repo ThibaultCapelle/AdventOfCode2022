@@ -42,23 +42,50 @@ class MyList:
                 return -1
             else:
                 return 0
+
+class QuickSort:
     
+    def __init__(self, table):
+        self.table=table
     
-i=0
+    def compare(self, i, j):
+        l=MyList(self.table[i], self.table[j])
+        return l.compare(self.table[i], self.table[j])==1
+    
+    def swap(self, i, j):
+        temp=self.table[i]
+        self.table[i]=self.table[j]
+        self.table[j]=temp
+    
+    def partition(self, first, last, pivot):
+        self.swap(pivot, last)
+        j=first
+        for i in range(first, last):
+            if self.compare(i, last):
+                self.swap(i, j)
+                j+=1
+        self.swap(last, j)
+        return j
+    
+    def sort(self, first, last):
+        if first<last:
+            pivot=np.random.randint(first, last+1)
+            pivot=self.partition(first, last, pivot)
+            self.sort(first, pivot-1)
+            self.sort(pivot+1, last)
+
 res=[]
-while(len(lines)>0):
-    i+=1
-    line1=eval(lines.pop(0)[:-1])
-    line2=eval(lines.pop(0)[:-1])
-    if len(lines)>0:
-        lines.pop(0)
-    print(line1)
-    print(line2)
-    l=MyList(line1, line2)
-    test=l.compare(line1, line2)
-    print(test)
-    if test==1:
-        res.append(i)
-    
-print(np.sum(res))
-    
+inputs=[]
+for line in lines:
+    if line!='\n':
+        inputs.append(eval(line[:-1]))
+inputs.append([[2]])
+inputs.append([[6]])
+sort=QuickSort(inputs)
+sort.sort(0,len(inputs)-1)
+
+res=[]
+for i, item in enumerate(sort.table):
+    if item==[[2]] or item==[[6]]:
+        res.append(i+1)
+print(res[0]*res[1])
