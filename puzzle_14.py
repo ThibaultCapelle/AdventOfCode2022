@@ -12,7 +12,7 @@ filename='input_14'
 with open(filename, 'r') as f:
     lines=f.readlines()
 
-rocks=np.zeros((600,600))
+rocks=np.zeros((700,600))
 for line in lines:
     coords_raw=line[:-1].split(' -> ')
     coords=[]
@@ -27,12 +27,11 @@ for line in lines:
         coords.append([int(x), int(y)])
 
 ylim=np.max(np.unravel_index(np.where(rocks==1), rocks.shape)[1][1])
+rocks[:,ylim+2]=1
 x_start, y_start=500,0
 
 def propagate(x1, y1):
-    if y1>ylim:
-        return -1
-    elif rocks[x1,y1+1]==0:
+    if rocks[x1,y1+1]==0:
         return propagate(x1, y1+1)
     elif rocks[x1-1,y1+1]==0:
         return propagate(x1-1, y1+1)
@@ -40,10 +39,11 @@ def propagate(x1, y1):
         return propagate(x1+1, y1+1)
     else:
         rocks[x1, y1]=-1
+        print([x1,y1])
         return [x1,y1]
         
 i=0
-while(propagate(x_start, y_start)!=-1):
+while(propagate(x_start, y_start)!=[x_start, y_start]):
     i+=1
-print(i)
+print(i+1)
     
