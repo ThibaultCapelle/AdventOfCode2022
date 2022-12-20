@@ -31,36 +31,89 @@ class Graph:
                                self.valve_ini,
                                self.time_left,
                                0,
-                               0)
+                               0,
+                               -np.inf,
+                               np.inf,
+                               True)
     
     def alpha_beta(self, valves, valve_ini, time_left, pressure_released,
-                   accumulated_release):
+                   accumulated_release, alpha, beta, maximizing_player):
         if time_left==0:
             return accumulated_release
         else:
-            #open the valve
-            if not valves[valve_ini].opened:
-                valves[valve_ini].opened=True
-                res1=self.alpha_beta(valves.copy(),
-                                     valve_ini,
-                                     time_left-1,
-                                     pressure_released+valves[valve_ini].rate,
-                                     accumulated_release+pressure_released)
-                valves[valve_ini].opened=False
-            else:#do nothing
-                res1=self.alpha_beta(valves.copy(),
+            if maximizing_player:
+                value =-np.inf
+                if not valves[valve_ini].opened:#open the valve
+                    valves[valve_ini].opened=True
+                    value=np.max([value, self.alpha_beta(valves.copy(),
+                                         valve_ini,
+                                         time_left-1,
+                                         pressure_released+valves[valve_ini].rate,
+                                         accumulated_release+pressure_released,
+                                         alpha,
+                                         beta,
+                                         False)])
+                    valves[valve_ini].opened=False
+                    if value>=beta:
+                        return value
+                    alpha=np.max([alpha, value])
+                value=np.max([value,self.alpha_beta(valves.copy(),
                                      valve_ini,
                                      time_left-1,
                                      pressure_released,
-                                     accumulated_release+pressure_released)
-            #try the childs
-            res2=[self.alpha_beta(valves.copy(),
+                                     accumulated_release+pressure_released,
+                                     alpha, beta, False)])
+                if value>=beta:
+                    return value
+                alpha=np.max([alpha, value])
+                for child in valves[valve_ini].childs:
+                    value=np.max([value, self.alpha_beta(valves.copy(),
                                      child,
                                      time_left-1,
                                      pressure_released,
-                                     accumulated_release+pressure_released) 
-                  for child in valves[valve_ini].childs]
-            return np.max(res2+[res1])
+                                     accumulated_release+pressure_released,
+                                     alpha, beta, False)])
+                    if value>=beta:
+                        return value
+                    alpha=np.max([alpha, value])
+                return value
+    
+            else:
+                value =np.inf
+                if not valves[valve_ini].opened:#open the valve
+                    valves[valve_ini].opened=True
+                    value=np.min([value, self.alpha_beta(valves.copy(),
+                                         valve_ini,
+                                         time_left-1,
+                                         pressure_released+valves[valve_ini].rate,
+                                         accumulated_release+pressure_released,
+                                         alpha,
+                                         beta,
+                                         True)])
+                    valves[valve_ini].opened=False
+                    if value<=alpha:
+                        return value
+                    beta=np.min([beta, value])
+                value=np.min([value,self.alpha_beta(valves.copy(),
+                                     valve_ini,
+                                     time_left-1,
+                                     pressure_released,
+                                     accumulated_release+pressure_released,
+                                     alpha, beta, True)])
+                if value<=alpha:
+                    return value
+                beta=np.min([beta, value])
+                for child in valves[valve_ini].childs:
+                    value=np.min([value, self.alpha_beta(valves.copy(),
+                                     child,
+                                     time_left-1,
+                                     pressure_released,
+                                     accumulated_release+pressure_released,
+                                     alpha, beta, True)])
+                    if value<=alpha:
+                        return value
+                    beta=np.min([beta, value])
+                return value
         
 valves=dict()
 for line in lines:
@@ -72,5 +125,5 @@ for line in lines:
     elif 'valve' in line:
         tunnels=[line[:-1].split('valve ')[1]]
     valves[valve_name]=Valve(flow_rate, tunnels)
-graph=Graph(valves, 'AA', time_left=11)
+graph=Graph(valves, 'AA', time_left=5)
 print(graph.start())
